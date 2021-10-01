@@ -1,9 +1,9 @@
 #!/bin/bash
-echo "Please enter the interface to listen to the networks : \n "
+echo -e "[\e[0;33mi\e[0m] Please enter the interface to listen to the networks :"
 read listeningInterface
-echo "Please enter the interface to monitor mode : \n"
+echo -e "[\e[0;33mi\e[0m] Please enter the interface to monitor mode :"
 read deauthInterface
-echo "Please enter the interface that will be connected to internet : \n"
+echo -e "[\e[0;33mi\e[0m] Please enter the interface that will be connected to internet :"
 read internetInterface
 
 finalESSID=""
@@ -11,9 +11,9 @@ finalBSSID=""
 
 select ESSID in $(iwlist ${deauthInterface} scan | grep ESSID)
 do
-var=${ESSID#*:\"}
-finalESSID=${var%\"}
-break
+        var=${ESSID#*:\"}
+        finalESSID=${var%\"}
+        break
 done
 
 BSSID=$(iwlist ${deauthInterface} scan | grep -B 5 $finalESSID | grep Address| head -1 )
